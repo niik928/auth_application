@@ -1,0 +1,5 @@
+#development version of configuration
+
+#spring:
+#  profiles:
+#  active: dev
