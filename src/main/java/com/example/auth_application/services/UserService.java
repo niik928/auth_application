@@ -3,8 +3,6 @@ package com.example.auth_application.services;
 import com.example.auth_application.dtos.UserDto;
 import com.example.auth_application.entities.User;
 
-import java.util.UUID;
-
 public interface UserService {
 
     //create user
@@ -24,6 +22,5 @@ public interface UserService {
 
     //get all users
     Iterable<UserDto> getAllUsers();
-
 
 }

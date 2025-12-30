@@ -1,17 +1,23 @@
 package com.example.auth_application.serviceImpl;
 
+import com.example.auth_application.dtos.RoleDto;
 import com.example.auth_application.dtos.UserDto;
 import com.example.auth_application.entities.User;
 import com.example.auth_application.exceptions.ResourceNotFoundException;
 import com.example.auth_application.helpers.UserHelper;
+import com.example.auth_application.repositories.RoleRepository;
 import com.example.auth_application.repositories.UserRepository;
 import com.example.auth_application.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.auth_application.entities.Role;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -20,6 +26,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional
@@ -42,22 +50,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-         UUID uId = UserHelper.parseUUID(userId);
-         User existingUser = userRepository
-                 .findById(uId)
-                 .orElseThrow(() -> new ResourceNotFoundException("User not found with given id"));
-         if(userDto.getName()!=null) existingUser.setName(userDto.getName());
-         if(userDto.getImage()!=null) existingUser.setImage(userDto.getImage());
-         if(userDto.getProvider()!=null) existingUser.setProvider(userDto.getProvider());
+        UUID uId = UserHelper.parseUUID(userId);
+        User existingUser = userRepository
+                .findById(uId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with given id"));
+        if (userDto.getName() != null) existingUser.setName(userDto.getName());
+        if (userDto.getImage() != null) existingUser.setImage(userDto.getImage());
+        if (userDto.getProvider() != null) existingUser.setProvider(userDto.getProvider());
         //TODO change password updation login...
-         if(userDto.getPassword()!=null) existingUser.setPassword(userDto.getPassword());
-         existingUser.setEnable(userDto.isEnable());
-         existingUser.setUpdatedAt(Instant.now());
-         User updatedUser = userRepository.save(existingUser);
-         return modelMapper.map(updatedUser,UserDto.class);
+        if (userDto.getPassword() != null) existingUser.setPassword(userDto.getPassword());
+        existingUser.setEnable(userDto.isEnable());
+        existingUser.setUpdatedAt(Instant.now());
+        User updatedUser = userRepository.save(existingUser);
+        return modelMapper.map(updatedUser, UserDto.class);
     }
 
+
     @Override
+    @Transactional
     public void deleteUser(String userId) {
         UUID uId = UserHelper.parseUUID(userId);
         User user = userRepository.findById(uId)
@@ -68,7 +78,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(String userId) {
-
         User user = userRepository.findById(UserHelper.parseUUID(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found given id"));
         return modelMapper.map(user, UserDto.class);
@@ -82,4 +91,5 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(user -> modelMapper.map(user, UserDto.class)).toList();
     }
+
 }

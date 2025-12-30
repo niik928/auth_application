@@ -53,7 +53,11 @@ public class JwtService {
     public String generateAccessToken(User user) {
         Instant now = Instant.now();
         List<String> roles = user.getRole() == null ? List.of() :
-                user.getRole().stream().map(Role::getName).toList();
+                user.getRole().stream()
+                        .map(Role::getName).toList();
+
+        System.out.println("ROLES AT LOGIN = " + user.getRole());
+
         return Jwts.builder()
                 .id(UUID.randomUUID().toString())
                 .subject(user.getID().toString())
@@ -67,6 +71,7 @@ public class JwtService {
                 ))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+
     }
 
     // generate refreshotken.
@@ -86,6 +91,7 @@ public class JwtService {
     //parse the token//token verify//signature check
 
     public Jws<Claims> parse(String token) {
+
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
     }
 
@@ -110,13 +116,13 @@ public class JwtService {
         return parse(token).getPayload().getId();
     }
 
-    public List<String> getRoles(String token) {
-        Claims c = parse(token).getPayload();
-        return (List<String>) c.get("roles");
-    }
-
-    public String getEmail(String token) {
-        Claims c = parse(token).getPayload();
-        return (String) c.get("email");
-    }
+//    public List<String> getRoles(String token) {
+//        Claims c = parse(token).getPayload();
+//        return (List<String>) c.get("roles");
+//    }
+//
+//    public String getEmail(String token) {
+//        Claims c = parse(token).getPayload();
+//        return (String) c.get("email");
+//    }
 }

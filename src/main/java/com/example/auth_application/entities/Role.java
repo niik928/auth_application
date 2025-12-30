@@ -11,10 +11,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @Entity
-
+@Table(name = "role")
 public class Role {
     @Id
-    private UUID id = UUID.randomUUID();
+   private UUID ID = UUID.randomUUID();
     @Column(unique = true ,nullable = false )
     private String name ;
 }

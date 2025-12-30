@@ -58,11 +58,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                         if (user.isEnable() &&
                                 SecurityContextHolder.getContext().getAuthentication() == null) {
+                            List<GrantedAuthority> authorities = user.getRole() == null ? List.of()
+                                    : user.getRole().stream().map(role -> new SimpleGrantedAuthority(role.getName()))
+                                    .collect(Collectors.toList());
+                            authorities.forEach(a ->
+                                    logger.error("🔥 AUTHORITY IN CONTEXT = {}", a.getAuthority())
+                            );
 
-                            List<GrantedAuthority> authorities = user.getRole() == null ? List.of() : user.getRole().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
                             UsernamePasswordAuthenticationToken authentication =
                                     new UsernamePasswordAuthenticationToken(
-                                            user.getEmail(),
+                                           user.getEmail(),
+
                                             null,
                                             authorities
                                     );
@@ -89,12 +95,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-        if (uri.startsWith("/api/v1/auth/")) return true;  // Skip auth endpoints
-        if (uri.equals("/error")) return true;             // Skip error dispatch
-        return false;
+
+        return uri.startsWith("/api/auth/")
+                || uri.startsWith("/swagger-ui")
+                || uri.startsWith("/v3/api-docs")
+                || uri.equals("/swagger-ui.html")
+                || uri.equals("/error");
     }
 
 

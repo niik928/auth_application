@@ -1,9 +1,6 @@
 package com.example.auth_application.controller;
 
-import com.example.auth_application.dtos.LoginRequest;
-import com.example.auth_application.dtos.RefreshTokenRequest;
-import com.example.auth_application.dtos.TokenResponse;
-import com.example.auth_application.dtos.UserDto;
+import com.example.auth_application.dtos.*;
 import com.example.auth_application.entities.RefreshToken;
 import com.example.auth_application.entities.User;
 import com.example.auth_application.repositories.RefreshTokenRepository;
@@ -27,11 +24,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
@@ -58,6 +54,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerUser(userDto));
 
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -218,5 +215,10 @@ public class AuthController {
         cookieService.addNoStoreHeaders(response);
         SecurityContextHolder.clearContext();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/me")
+    public User getCurrentUser(Principal principal) {
+        return userRepository.findByEmail(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("You are not loggedIn"));
     }
 }

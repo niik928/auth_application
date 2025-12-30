@@ -14,14 +14,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
-
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @Column(name = "id",columnDefinition = "BINARY(16)")
     private UUID ID;
     @Column(name = "email", unique = true, length = 300)
     private String email;
@@ -36,7 +34,13 @@ public class User {
     private Provider provider = Provider.LOCAL ;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> role = new HashSet<>();
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> role;
+
 
     @PrePersist
     protected void onCreate(){   ///run before save into database
@@ -49,9 +53,6 @@ public class User {
     protected void onUpdate(){
         updatedAt = Instant.now();
     }
-
-
-
 
 
 }
