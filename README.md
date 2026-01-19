@@ -6,38 +6,51 @@ Supports JWT-based authentication with username/password login
 BackEnd
 --------
 . Spring Boot 3.x
+
 . Spring Security 6.x
+
 . Spring Data JPA (MySQL)
+
 . OAuth2 Client (Google, GitHub)
+
 . JWT Authentication
+
 . Lombok + HikariCP
 
 Project Structure
 ------------------
 auth-app-springboot
-│
-├── backend/                  # Spring Boot Backend
-│   ├── src/
-│   ├── pom.xml
-│   └── application.yml
-│
+├── backend/     # Spring Boot Backend
+
+├── src/
+
+├── pom.xml
+ 
+└── application.yml
+
 └── README.md
 
 ⚙️ Backend Setup (Spring Boot)
 -------------------------------
 
 🧩 Prerequisites
+
 . Java 17+
+
 . Maven 3.9+
+
 . MySQL (or compatible database)
+
 . Git
 
 🧰 Steps to Run Backend
 ---------------------------
 . Navigate to the backend folder:
+
 cd backend
 
 . Create a new database:
+
 CREATE DATABASE auth_app;
 
 . Configure application.yml:
@@ -79,6 +92,7 @@ export GITHUB_CLIENT_ID="your-github-client-id"
 export GITHUB_CLIENT_SECRET="your-github-client-secret"
 
 . Run the Spring Boot app:
+
 mvn spring-boot:run
 
 📍 Backend runs on http://localhost:8080
